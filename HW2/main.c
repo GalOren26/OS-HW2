@@ -1,29 +1,38 @@
 
 #include "HardCodedData.h"
 #include "Functions.h"
-int main(int argc, char * argv [])
+#include "ThrredFuncs.h"
+int main(int argc, char* argv[])
 {
 	HANDLE InputHandle;
-	LPCSTR str = argv[1];
-	DWORD mode = OPEN_EXISTING;
-	InputHandle=OpenFileWrap(str, mode);
-
-	//return output path 
-	char * p_abs_path= strrchr(str, '\\' ); 
-	char* p_explicit_file = "decrypted.txt";
-	int explicit_file_len = strlen(p_explicit_file);
-	int abs_path_len =  p_abs_path == NULL? 0: p_abs_path - str;
-	char* dest = calloc(explicit_file_len + abs_path_len+ ADDITION_LEN_TO_PATH, sizeof(char));
-	CheakAlocation((void*)dest);
-	if (p_abs_path)
+	// TO-DO chaek if  input is valid path 
+	LPCSTR path = argv[1];
+	BOOL ret= CheakIsAnumber(argv[2]);
+	if (ret == FALSE)
 	{
-		memcpy(dest, str, abs_path_len);
-		dest[abs_path_len] = '\\';
+		printf("key is not a number  :(");
+		exit(NOT_A_NUMBER);
 	}
-
-	strcat_s(dest, explicit_file_len +abs_path_len+ ADDITION_LEN_TO_PATH, p_explicit_file);
-	mode = CREATE_ALWAYS;
-	OpenFileWrap(dest, mode);
-
+	uli key=atoi(argv[2]);
+	DWORD mode = OPEN_EXISTING;
+	InputHandle = OpenFileWrap(path, mode);
+	DWORD num_of_lines = 0;
+	uli* end_of_lines = 0;
+	read_number_of_line_and_end_of_lines(InputHandle, &num_of_lines, &end_of_lines);
 	CloseFileWrap(InputHandle);
+	//return output path 
+	char* dest_path;
+	find_dest_path(path, &dest_path);
+
+	// TO-DO ADJUST TO  EACH TERAD IN FOR LOOP LATER 
+	parssing_data parms = {
+		0,
+		end_of_lines[1],
+		key,
+		dest_path,
+		path,
+		1
+	};
+	decrypt_block(&parms);
+	free(dest_path);
 }
