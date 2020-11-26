@@ -32,6 +32,15 @@
 		}
 	}
 
+	void FreeHandelsArray(HANDLE* handels, int len)
+	{
+		CheakArgs(handels);
+		for (int i = 0; i < len;i++)
+		{
+			CloseHandleWrap(handels[i]);
+		}
+	}
+
 	void CheakAlocation(void* p_arr)
 	{
 		if (p_arr == NULL) {
@@ -47,8 +56,10 @@
 			exit(INVALID_HANDLE_VALUE);
 		}
 	}
+
 	BOOL CheakIsAnumber(char* str)
 	{
+		valid_PTR(str);
 		/*This function cheak if string is a number - used for validate the value of key in this code */
 		for (int i = 0; str[i] != '\0'; i++)
 		{
@@ -65,7 +76,7 @@
 
 	void read_number_of_line_and_end_of_lines(HANDLE file, PDWORD OUT num_of_lines_out, OUT uli** p_end_of_lines_out)
 	{
-		/*return the  number of line in file  and the store end of each line */
+		/*return the  number of line in file  and the places in the file of each  end of line */
 
 		CheakHandle(file);
 		// cheak_file_size_in_order to read file.
@@ -75,21 +86,34 @@
 			printf("empty file . error code %d", GetLastError());
 			exit(EMPTY_FILE);
 		}
-		//asume file not more than 4gb 
+		if (len_li.u.HighPart != 0)
+		{	//asume file not more than 4gb 
+			printf("File is Too big need to be less then 4 GB !");
+			exit(FILE_IS_TOO_BIG);
+		}
 		DWORD len = len_li.u.LowPart;
-		char* my_file_buff= ReadFileWrap(len, file);
+		char* my_file_buff = calloc(len, sizeof(char));
+		CheakAlocation(my_file_buff);
+		ReadFileWrap(len, file, my_file_buff);
 		DWORD num_of_lines = 0; 
 		/* allocatre array to store end of lines, size bounded by the size of file and after fill will be shrink.*/
 		uli* p_end_of_lines_temp = calloc( len, sizeof(uli));
 		CheakAlocation(p_end_of_lines_temp);
 		uli place = 0; 
-		for (DWORD i = 0; i < len; i++)
+		DWORD pos_in_file;
+		for (pos_in_file = 0; pos_in_file < len; pos_in_file++)
 		{
-			if (my_file_buff[i] == '\n')
+			if (my_file_buff[pos_in_file] == '\n')
 			{
 				num_of_lines++;
-				p_end_of_lines_temp[place++] = i;
+				p_end_of_lines_temp[place++] = pos_in_file;
 			}
+		}
+		if (my_file_buff[len - 1] != '\n')// cheak if last line is without new line
+		{
+			num_of_lines++;
+			p_end_of_lines_temp[place++] = pos_in_file-1;
+
 		}
 		uli* p_end_of_lines = calloc(place, sizeof(uli));
 		CheakAlocation(p_end_of_lines);
@@ -109,7 +133,17 @@
 		return hFile;
 	}
 	
-	void CloseFileWrap(HANDLE file)
+	void FreeArray(void** arr, int len)
+	{
+		CheakArgs(arr);
+		for (int i = 0; i < len;i++)
+		{
+			free(arr[i]);
+		}
+		free(arr);
+	}
+
+	void CloseHandleWrap(HANDLE file)
 	{
 		//CloseHandle wrap 
 		BOOL  file_status = CloseHandle(file);
@@ -131,19 +165,17 @@
 		}
 	}
 
-	char* ReadFileWrap(DWORD len, HANDLE file)
+	int  ReadFileWrap(DWORD len, HANDLE file,char* my_file_buff )
 	{
 		//WRAP TO ReadFile 
-		//Importent Rember to free allocation!!! 
-		char* my_file_buff = calloc(len, sizeof(char));
-		CheakAlocation(my_file_buff);
+	
 		DWORD lpNumberOfBytesRead = 0;
 		if (ReadFile(file, (LPVOID)my_file_buff, len, &lpNumberOfBytesRead, NULL) == 0)
 		{
 			printf("error read file . error code %d", GetLastError());
-			exit(ERROR_READ_FILE);
+			return ERROR_READ_FILE;
 		}
-		return my_file_buff;
+		return SUCCESS;
 	}
 
 	void WriteFileWrap(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
@@ -177,125 +209,3 @@ put the result in dest ptr TO-do  free dest outside */
 		*dest_out = dest;
 	}
 
-
-
-
-	//static HANDLE CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
-	//	LPDWORD p_thread_id, args* params,
-	//	HANDLE thread_handle)
-	//{
-	//	if (NULL == p_start_routine)
-	//	{
-	//		printf("Error when creating a thread");
-	//		printf("Received null pointer");
-	//		exit(ERROR_CODE);
-	//	}
-
-	//	if (NULL == p_thread_id)
-	//	{
-	//		printf("Error when creating a thread");
-	//		printf("Received null pointer");
-	//		exit(ERROR_CODE);
-	//	}
-
-	//	thread_handle = CreateThread(
-	//		NULL,            /*  default security attributes */
-	//		0,               /*  use default stack size */
-	//		p_start_routine, /*  thread function */
-	//		params,            /*  argument to thread function */
-	//		0,               /*  use default creation flags */
-	//		p_thread_id);    /*  returns the thread identifier */
-
-	//	if (NULL == thread_handle)
-	//	{
-	//		printf("Couldn't create thread\n");
-	//		exit(ERROR_CODE);
-	//	}
-
-	//	return thread_handle;
-	//}
-
-	////int charcount(FILE* const input_file)
-	////{
-	//// int c, count;
-	////
-	//// count = 0;
-	//// for (;;)
-	//// {
-	//// c = fgetc(input_file);
-	//// if (c == EOF || c == '\n')
-	//// break;
-	//// ++count;
-	//// }
-	////
-	//// return count;
-	////}
-
-
-	//void Writetofile(int key)
-	//{
-	//	FILE* fin;
-	//	FILE* fout;
-	//	char buff;
-	//	int buffsize;
-	//	//char* buff = NULL;
-	//	fin = fopen("in.txt", "r");
-	//	if (fin == NULL)
-	//	{
-	//		printf("Cannot open file 1");
-	//		exit(0);
-	//	}
-	//	fout = fopen("out.txt", "w");
-	//	if (fout == NULL)
-	//	{
-	//		printf("Cannot open file 2");
-	//		exit(0);
-	//	}
-
-	//	// Read contents from file
-	//	buff = fgetc(fin);
-	//	while (buff != EOF)
-	//	{
-	//		buff = Decryption(buff, key);
-	//		fputc(buff, fout);
-	//		buff = fgetc(fin);
-	//	}
-
-
-
-	//	fclose(fin);
-	//	fclose(fout);
-
-	//}
-	//
-	//	void Writetofile(int key)
-	//{
-	//	FILE* fin;
-	//	FILE* fout;
-	//	char buff;
-	//	fin = fopen("in.txt", "r");
-	//	if (fin == NULL)
-	//	{
-	//		printf("Cannot open file 1");
-	//		exit(1);
-	//	}
-
-	//	fout = fopen("out.txt", "w");
-	//	if (fout == NULL)
-	//	{
-	//		printf("Cannot open file 2");
-	//		exit(1);
-	//	}
-
-	//	// Read contents from file
-	//	buff = fgetc(fin);
-	//	while (buff != EOF)
-	//	{
-	//		buff = Decryption(buff, key);
-	//		fputc(buff, fout);
-	//		buff = fgetc(fin);
-	//	}
-	//	fclose(fin);
-	//	fclose(fout);
-
-	//}

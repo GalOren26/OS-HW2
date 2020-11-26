@@ -7,7 +7,6 @@ typedef struct
 {
 	uli start_pos;
 	uli end_pos;
-	uli num_of_lines;
 	LPCSTR  output_path;
 	LPCSTR input_path;
 	uli key;
@@ -16,4 +15,9 @@ typedef struct
 
 void find_dest_path(const char* source_path, OUT char** dest_path);
 void decrypt_block(parssing_data* params);
-void Decryption(char* coded, uli number_of_lines, uli key);
+void Decryption(char* coded, uli end_of_block, uli key);
+
+void Createmultiplethreads(int num_of_threads, uli num_of_lines, uli* end_of_lines, parssing_data* params);
+HANDLE CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
+	LPVOID p_thread_parameters,
+	LPDWORD p_thread_id);

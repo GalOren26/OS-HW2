@@ -1,2 +1,4 @@
 ﻿  main.c
+C:\Users\Gal\Desktop\MasterDeg\Os\hw2\HW2\HW2\main.c(36,50): warning C4047: '>': 'char *' differs in levels of indirection from 'int'
+C:\Users\Gal\Desktop\MasterDeg\Os\hw2\HW2\HW2\main.c(42,1): warning C4047: 'initializing': 'int' differs in levels of indirection from 'char *'
   HW2.vcxproj -> C:\Users\Gal\Desktop\MasterDeg\Os\hw2\HW2\x64\Debug\HW2.exe
