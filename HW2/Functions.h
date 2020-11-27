@@ -24,5 +24,6 @@ void WriteFileWrap(HANDLE hFile, LPCVOID  lpBuffer, DWORD  nNumberOfBytesToWrite
 HANDLE OpenFileWrap( LPCSTR str, DWORD mode);
 void read_number_of_line_and_end_of_lines(HANDLE file, PDWORD OUT num_of_lines_out,  OUT uli** p_end_of_lines);
 BOOL CheakIsAnumber(char* str);
-int checkmode(char* mode);
-void find_dest_path_enc(const char* source_path, OUT char** dest_out);
+
+int CheckOperation(char* operation);
+void find_dest_path(const char* source_path, OUT char** dest_out, int opreation);

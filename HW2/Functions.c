@@ -11,12 +11,12 @@
 	}
 	void CheakArgs(int argc)
 {
-	if (argc < 3)
+	if (argc < 5)
 	{
 		printf("ERROR: Not enough input arguments");
 		exit(ERR_CODE_NOT_ENOUGH_ARGUMENTS);
 	}
-	if (argc > 3)
+	if (argc > 5)
 	{
 		printf("ERROR: Too many input arguments");
 		exit(ERR_CODE_TOO_MANY_ARGUMENTS);
@@ -190,14 +190,22 @@
 		}
 	}
 
-	void find_dest_path(const char* source_path,OUT char ** dest_out )
+	void find_dest_path(const char* source_path,OUT char ** dest_out,int opreation  )
 	{
 		/* find the dest path of where to save the decrypted.txt  ootput file rather source path is absulte or realative
 put the result in dest ptr TO-do  free dest outside */
 		char* dest;
 		valid_PTR((void*)source_path);
 		char* p_abs_path = strrchr(source_path, '\\');
-		char* p_explicit_file = "decrypted.txt";
+		char* p_explicit_file;
+		if (opreation == ENCRYPT)
+		{
+			p_explicit_file = "encrypted.txt";
+		}
+		else
+		{
+			p_explicit_file = "decrypted.txt";
+		}
 		size_t explicit_file_len = strlen(p_explicit_file);
 		size_t abs_path_len = p_abs_path == NULL ? 0 : p_abs_path - source_path;
 		dest = calloc( explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, sizeof(char));
@@ -211,28 +219,24 @@ put the result in dest ptr TO-do  free dest outside */
 		*dest_out = dest;
 	}
 
-	int checkmode(char* mode)
+	int CheckOperation(char* operation)
 	{	char enc[3] = "-e";
 		char dec[3] = "-d";
 		int modeflag = 3;
-		if (mode == NULL)
+		valid_PTR(operation);
+		if (strchr(operation, 'e') != NULL && strchr(operation, 'd') != NULL)
 		{
-			printf("No encryption/decryption specified");
-			exit(1);
+			printf("INVALID_NUMBER_OF_PARAMS");
+			exit(INVALID_NUMBER_OF_PARAMS);
 		}
-		if (strchr(mode, 'e') != NULL && strchr(mode, 'd') != NULL)
+		if (strcmp(operation, enc) == 0)
 		{
-			printf("Please select one mode");
-			exit(1);
-		}
-		if (strcmp(mode, enc) == 0)
-		{
-			modeflag = 0;
+			modeflag = ENCRYPT;
 
 		}
-		if (strcmp(mode, dec) == 0)
+		if (strcmp(operation, dec) == 0)
 		{
-			modeflag = 1;
+			modeflag = DECRYPT;
 		}
 
 		return modeflag;

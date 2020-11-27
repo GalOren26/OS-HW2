@@ -6,12 +6,13 @@
 
 int main(int argc, char* argv[])
 {
-
+	CheakArgs(argc);
 	HANDLE InputHandle;
 	// TO-DO chaek if  input is valid path 
 	LPCSTR input_path = argv[1];
 	BOOL ret1 = CheakIsAnumber(argv[2]);
 	BOOL ret2 = CheakIsAnumber(argv[3]);
+    int operation= CheckOperation(argv[4]);
 	if (ret1 == FALSE|| ret2 == FALSE)
 	{
 		printf("key or num of threads  is not a number  :(");
@@ -32,7 +33,7 @@ int main(int argc, char* argv[])
 	CloseHandleWrap(InputHandle);
 	//return output path 
 	char* dest_path;
-	find_dest_path(input_path, &dest_path);
+	find_dest_path(input_path, &dest_path, operation);
 
 	// TO-DO ADJUST TO  EACH TERAD IN FOR LOOP LATER 
 	parssing_data params = {
@@ -40,13 +41,10 @@ int main(int argc, char* argv[])
 		end_of_lines[num_of_lines - 1],
 		dest_path,
 		input_path,
-		key 
+		key ,
+		operation
 	};
-
-	if (checkmode(argv[4]) == 1){
-		Createmultiplethreads(num_of_threads, num_of_lines, end_of_lines, &params);}
-	if (checkmode(argv[4]) == 0){
-		Createmultiplethreads_enc(num_of_threads, num_of_lines, end_of_lines, &params);}
+	Createmultiplethreads(num_of_threads, num_of_lines, end_of_lines, &params);
 	free(dest_path);
 
 }
