@@ -1,4 +1,6 @@
-﻿  main.c
-C:\Users\Gal\Desktop\MasterDeg\Os\hw2\HW2\HW2\main.c(36,50): warning C4047: '>': 'char *' differs in levels of indirection from 'int'
-C:\Users\Gal\Desktop\MasterDeg\Os\hw2\HW2\HW2\main.c(42,1): warning C4047: 'initializing': 'int' differs in levels of indirection from 'char *'
-  HW2.vcxproj -> C:\Users\Gal\Desktop\MasterDeg\Os\hw2\HW2\x64\Debug\HW2.exe
+﻿  Functions.c
+C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(81,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
+C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(81,3): warning C4024: 'exit': different types for formal and actual parameter 1
+C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(134,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
+C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(134,3): warning C4024: 'exit': different types for formal and actual parameter 1
+  HW2.vcxproj -> C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\x64\Debug\HW2.exe

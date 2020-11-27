@@ -34,28 +34,28 @@
 
 	void FreeHandelsArray(HANDLE* handels, int len)
 	{
-		CheakArgs(handels);
+		valid_PTR(handels);
 		for (int i = 0; i < len;i++)
 		{
 			CloseHandleWrap(handels[i]);
 		}
 	}
 
-	void CheakAlocation(void* p_arr)
-	{
-		if (p_arr == NULL) {
-			printf_s("MEMORY_ALLOCATION_FAILURE.\n");
-			exit(MEMORY_ALLOCATION_FAILURE);
-		}
-	}
-	void CheakHandle(HANDLE my_handle)
-	{
-		if (my_handle == INVALID_HANDLE_VALUE)
-		{
-			printf_s("INVALID_HANDLE. error code %d", GetLastError());
-			exit(INVALID_HANDLE_VALUE);
-		}
-	}
+	//void  CheakAlocation(void* p_arr)
+	//{
+	//	if (p_arr == NULL) {
+	//		printf_s("MEMORY_ALLOCATION_FAILURE.\n");
+	//		exit(MEMORY_ALLOCATION_FAILURE);
+	//	}
+	//}
+	//void CheakHandle(HANDLE my_handle)
+	//{
+	//	if (my_handle == INVALID_HANDLE_VALUE)
+	//	{
+	//		printf_s("INVALID_HANDLE. error code %d", GetLastError());
+	//		exit(INVALID_HANDLE_VALUE);
+	//	}
+	//}
 
 	BOOL CheakIsAnumber(char* str)
 	{
@@ -78,7 +78,7 @@
 	{
 		/*return the  number of line in file  and the places in the file of each  end of line */
 
-		CheakHandle(file);
+		CheakHandle(file)
 		// cheak_file_size_in_order to read file.
 		LARGE_INTEGER  len_li;
 		if (GetFileSizeEx(file, &len_li) == 0)
@@ -92,7 +92,7 @@
 			exit(FILE_IS_TOO_BIG);
 		}
 		DWORD len = len_li.u.LowPart;
-		char* my_file_buff = calloc(len, sizeof(char));
+		char* my_file_buff = (char* )calloc(len, sizeof(char));
 		CheakAlocation(my_file_buff);
 		ReadFileWrap(len, file, my_file_buff);
 		DWORD num_of_lines = 0; 
@@ -117,7 +117,9 @@
 		}
 		uli* p_end_of_lines = calloc(place, sizeof(uli));
 		CheakAlocation(p_end_of_lines);
-		memcpy(p_end_of_lines, p_end_of_lines_temp, sizeof(uli) *place);
+		if (place < len)
+			memcpy(p_end_of_lines, p_end_of_lines_temp, sizeof(uli) *place);
+
 		free(p_end_of_lines_temp); 
 		free(my_file_buff);
 		*num_of_lines_out = num_of_lines;
@@ -129,13 +131,13 @@
 		//CreateFileA wrap 
 		HANDLE hFile;
 		hFile = CreateFileA(str, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ| FILE_SHARE_WRITE, NULL, mode, FILE_ATTRIBUTE_NORMAL, NULL);
-		CheakHandle(hFile);
+		CheakHandle(hFile)
 		return hFile;
 	}
 	
 	void FreeArray(void** arr, int len)
 	{
-		CheakArgs(arr);
+		valid_PTR(arr);
 		for (int i = 0; i < len;i++)
 		{
 			free(arr[i]);
@@ -154,9 +156,9 @@
 		}
 	}
 
-	void SetFilePointerWrap(HANDLE input_file, uli start_pos, DWORD mode)
+	void SetFilePointerWrap(HANDLE input_file, uli pos, DWORD mode)
 	{
-		DWORD retval = SetFilePointer(input_file, start_pos, NULL, mode);
+		DWORD retval = SetFilePointer(input_file, pos, NULL, mode);
 
 		if (retval == INVALID_SET_FILE_POINTER)
 		{

@@ -8,13 +8,20 @@ int main(int argc, char* argv[])
 	HANDLE InputHandle;
 	// TO-DO chaek if  input is valid path 
 	LPCSTR input_path = argv[1];
-	BOOL ret = CheakIsAnumber(argv[2]);
-	if (ret == FALSE)
+	BOOL ret1 = CheakIsAnumber(argv[2]);
+	BOOL ret2 = CheakIsAnumber(argv[3]);
+	if (ret1 == FALSE|| ret2 == FALSE)
 	{
-		printf("key is not a number  :(");
+		printf("key or num of threads  is not a number  :(");
 		return NOT_A_NUMBER;
 	}
 	uli key = atoi(argv[2]);
+	int num_of_threads = atoi(argv[3]);
+	if (num_of_threads <0 || num_of_threads> MAXIMUM_WAIT_OBJECTS)
+	{
+		printf("Invalid number of Threads");
+		return(NOT_VALID_INPUT);
+	}
 	DWORD mode = OPEN_EXISTING;
 	InputHandle = OpenFileWrap(input_path, mode);
 	DWORD num_of_lines = 0;
@@ -33,13 +40,6 @@ int main(int argc, char* argv[])
 		input_path,
 		key 
 	};
-	if (argv[3] <0 || argv[3]> MAXIMUM_WAIT_OBJECTS || !CheakIsAnumber(argv[3]))
-	{
-		printf("Invalid number of Threads");
-		free(dest_path);
-		return(NOT_VALID_INPUT);
-	}
-	int num_of_threads = argv[3];
 	Createmultiplethreads(num_of_threads, num_of_lines, end_of_lines, &params);
 	free(dest_path);
 }

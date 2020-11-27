@@ -14,7 +14,7 @@ typedef struct
 
 
 void find_dest_path(const char* source_path, OUT char** dest_path);
-void decrypt_block(parssing_data* params);
+int decrypt_block(parssing_data* p_params);
 void Decryption(char* coded, uli end_of_block, uli key);
 
 void Createmultiplethreads(int num_of_threads, uli num_of_lines, uli* end_of_lines, parssing_data* params);
