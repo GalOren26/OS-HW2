@@ -211,3 +211,50 @@ put the result in dest ptr TO-do  free dest outside */
 		*dest_out = dest;
 	}
 
+	int checkmode(char* mode)
+	{	char enc[3] = "-e";
+		char dec[3] = "-d";
+		int modeflag = 3;
+		if (mode == NULL)
+		{
+			printf("No encryption/decryption specified");
+			exit(1);
+		}
+		if (strchr(mode, 'e') != NULL && strchr(mode, 'd') != NULL)
+		{
+			printf("Please select one mode");
+			exit(1);
+		}
+		if (strcmp(mode, enc) == 0)
+		{
+			modeflag = 0;
+
+		}
+		if (strcmp(mode, dec) == 0)
+		{
+			modeflag = 1;
+		}
+
+		return modeflag;
+	}
+	void find_dest_path_enc(const char* source_path, OUT char** dest_out)
+	{
+		/* find the dest path of where to save the encrypted.txt  output file rather source path is absulte or realative
+put the result in dest ptr TO-do  free dest outside */
+		char* dest;
+		valid_PTR((void*)source_path);
+		char* p_abs_path = strrchr(source_path, '\\');
+		char* p_explicit_file = "encypted.txt";
+		size_t explicit_file_len = strlen(p_explicit_file);
+		size_t abs_path_len = p_abs_path == NULL ? 0 : p_abs_path - source_path;
+		dest = calloc(explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, sizeof(char));
+		CheakAlocation((void*)dest);
+		if (p_abs_path)
+		{
+			memcpy(dest, source_path, abs_path_len);
+			dest[abs_path_len] = '\\';
+		}
+		strcat_s(dest, explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, p_explicit_file);
+		*dest_out = dest;
+	}
+

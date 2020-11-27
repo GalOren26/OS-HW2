@@ -2,6 +2,8 @@
 #include "HardCodedData.h"
 #include "Functions.h"
 #include "ThrredFuncs.h"
+
+
 int main(int argc, char* argv[])
 {
 
@@ -40,6 +42,11 @@ int main(int argc, char* argv[])
 		input_path,
 		key 
 	};
-	Createmultiplethreads(num_of_threads, num_of_lines, end_of_lines, &params);
+
+	if (checkmode(argv[4]) == 1){
+		Createmultiplethreads(num_of_threads, num_of_lines, end_of_lines, &params);}
+	if (checkmode(argv[4]) == 0){
+		Createmultiplethreads_enc(num_of_threads, num_of_lines, end_of_lines, &params);}
 	free(dest_path);
+
 }

@@ -21,3 +21,4 @@ void Createmultiplethreads(int num_of_threads, uli num_of_lines, uli* end_of_lin
 HANDLE CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
 	LPVOID p_thread_parameters,
 	LPDWORD p_thread_id);
+void Createmultiplethreads_enc(int num_of_threads, uli num_of_lines, uli* end_of_lines, parssing_data* p_params);
