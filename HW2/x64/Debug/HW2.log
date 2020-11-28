@@ -1,9 +1,5 @@
-﻿  ThrredFuncs.c
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(19,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(19,3): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(40,42): warning C4047: '==': 'HANDLE' differs in levels of indirection from 'long'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(48,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(48,3): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(121,2): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\HW2\ThrredFuncs.c(121,2): warning C4024: 'exit': different types for formal and actual parameter 1
-  HW2.vcxproj -> C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\x64\Debug\HW2.exe
+﻿  main.c
+  Functions.c
+  ThrredFuncs.c
+  Generating Code...
+  HW2.vcxproj -> C:\Users\Eran\Desktop\MasterDeg\Os\HW2\HW2\x64\Debug\HW2.exe

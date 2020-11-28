@@ -3,8 +3,14 @@
 #include "Functions.h"
 #include "ThrredFuncs.h"
 
-#include <vld.h>
 
+/*
+
+Authors – Gal Oren -206232506
+Rami Ayoub - 315478966
+Project – parllel encrypt and dycrypt  kaiser encrpytion with with syncronization of threads start togther \
+
+*/
 int main(int argc, char* argv[])
 {
 
@@ -38,7 +44,6 @@ int main(int argc, char* argv[])
 		printf("Invalid number of Threads");
 		return(NOT_VALID_INPUT);
 	}
-
 	DWORD mode = OPEN_EXISTING;
 	ret_val1 = OpenFileWrap(input_path, mode,&InputHandle);
 	if (ret_val1 != SUCCESS)
@@ -52,10 +57,12 @@ int main(int argc, char* argv[])
 	ret_val2=CloseHandleWrap(InputHandle);
 	if (ret_val2 != SUCCESS)
 	{
+		free(end_of_lines);
 		return ret_val2;
 	}
 	if (ret_val1 != SUCCESS)
 	{
+		free(end_of_lines);
 		return ret_val1;
 	}
 	//return output path 
@@ -63,12 +70,16 @@ int main(int argc, char* argv[])
 	ret_val1 =find_dest_path(input_path, &dest_path, operation);
 	if (ret_val1 != SUCCESS)
 	{
+		free(end_of_lines);
+		free(dest_path);
 		return ret_val1;
 	}
 	ret_val1 = CreateSemphoreWrap(num_of_threads, &main_wait);
 	ret_val2 = CreateSemphoreWrap(num_of_threads, &thread_wait);
 	if (ret_val1 != SUCCESS || ret_val2 != SUCCESS)
 	{
+		free(end_of_lines);
+		free(dest_path);
 		return ret_val1;
 	}
 	parssing_data params = {
@@ -82,8 +93,8 @@ int main(int argc, char* argv[])
 		thread_wait
 	};
 	Createmultiplethreads(num_of_threads, num_of_lines, end_of_lines, &params);
-
 	free(dest_path);
+	free(end_of_lines);
 	return SUCCESS;
 
 }

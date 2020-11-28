@@ -24,8 +24,8 @@ int Dec_Enc_Block(parssing_data* p_params)
 	 if (ret_val != SUCCESS)
 		 goto free2;
 	 DWORD len = p_params->end_pos- p_params->start_pos+1;
-	 char* my_file_buff = calloc(len, sizeof(char));
-	 ret_val=CheakAlocation(my_file_buff);
+	 char* my_file_buff = (char* )calloc(len, sizeof(char));
+	 ret_val=CheckAlocation(my_file_buff);
 	 if (ret_val != SUCCESS)
 		 goto free2;
 	  ret_val = ReadFileWrap(len,input_file, my_file_buff);
@@ -66,7 +66,8 @@ int Dec_Enc_Block(parssing_data* p_params)
  free4:
 	 CloseHandleWrap(output_file);
  free3:
-	 free(my_file_buff);
+	 if(my_file_buff!=0)
+		 free(my_file_buff);
  free2:
 	 CloseHandleWrap(input_file);
  free1:
@@ -168,19 +169,19 @@ int Createmultiplethreads(volatile int num_of_threads, uli num_of_lines, uli* en
 	int ret_val2 = 0;
 	/*create params to thread */
 	HANDLE* p_thread_handles = (HANDLE * )calloc(num_of_threads, sizeof(HANDLE)); // each cell in the array, contains params for thread
-	ret_val=CheakAlocation(p_thread_handles);
+	ret_val=CheckAlocation(p_thread_handles);
 	if (ret_val != SUCCESS)
 	{
 		goto free1;
 	}
 	DWORD* p_thread_ids = (DWORD * )calloc(num_of_threads, sizeof(DWORD)); // each cell in the array, contains params for thread
-	CheakAlocation(p_thread_ids);
+	CheckAlocation(p_thread_ids);
 	if (ret_val != SUCCESS)
 	{
 		goto free2;
 	}
 	parssing_data** thread_params = (parssing_data**)calloc(num_of_threads, sizeof(parssing_data*));// array to contain: functions params for each thread
-	CheakAlocation(thread_params);
+	CheckAlocation(thread_params);
 	if (ret_val != SUCCESS)
 	{
 		goto free3;
@@ -204,7 +205,7 @@ int Createmultiplethreads(volatile int num_of_threads, uli num_of_lines, uli* en
 		}
 		// params need to be allocate dynamiclly->init params 
 		thread_params[i] = (parssing_data*)calloc(num_of_threads, sizeof(parssing_data)); // each cell in the array, contains params for thread
-		ret_val=CheakAlocation(thread_params[i]);
+		ret_val=CheckAlocation(thread_params[i]);
 		if (ret_val != SUCCESS)
 			goto free4;
 

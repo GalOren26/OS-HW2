@@ -33,7 +33,7 @@
 		return SUCCESS;
 	}
 
-	void FreeHandelsArray(HANDLE* handels, int len)
+	int FreeHandelsArray(HANDLE* handels, int len)
 	{
 		int ret_val = 0;
 		ret_val=valid_PTR(handels);
@@ -46,6 +46,9 @@
 			if (handels[i]!=0)
 				CloseHandleWrap(handels[i]);
 		}
+		if (handels != 0)
+			free(handels);
+		return SUCCESS;
 	}
 
 	int WaitForSingleObjectWrap(HANDLE handle, uli time)
@@ -59,7 +62,7 @@
 		return SUCCESS;
 	}
 
-	int  CheakAlocation(void* p_arr)
+	int  CheckAlocation(void* p_arr)
 	{
 		if (p_arr == NULL) {
 			printf_s("MEMORY_ALLOCATION_FAILURE.\n");
@@ -72,7 +75,7 @@
 		if (my_handle == INVALID_HANDLE_VALUE)
 		{
 			printf_s("INVALID_HANDLE. error code %d", GetLastError());
-			return INVALID_HANDLE_VALUE;
+			return  GetLastError();
 		}
 		return SUCCESS;
 	}
@@ -119,7 +122,7 @@
 		DWORD len = len_li.u.LowPart;
 		char* my_file_buff = 0;
 		my_file_buff = (char*)calloc(len, sizeof(char));
-		ret_val=CheakAlocation(my_file_buff);
+		ret_val=CheckAlocation(my_file_buff);
 		if (ret_val != SUCCESS&& my_file_buff==0)
 			return ret_val;
 		ret_val=ReadFileWrap(len, file, my_file_buff);
@@ -131,7 +134,7 @@
 		DWORD num_of_lines = 0; 
 		/* allocatre array to store end of lines, size bounded by the size of file and after fill will be shrink.*/
 		uli* p_end_of_lines_temp = calloc( len, sizeof(uli));
-		ret_val =CheakAlocation(p_end_of_lines_temp);
+		ret_val =CheckAlocation(p_end_of_lines_temp);
 		if (ret_val != SUCCESS)
 		{
 			free(my_file_buff);
@@ -154,7 +157,7 @@
 
 		}
 		uli* p_end_of_lines = calloc(place, sizeof(uli));
-		ret_val=CheakAlocation(p_end_of_lines);
+		ret_val=CheckAlocation(p_end_of_lines);
 		if (ret_val != SUCCESS)
 		{
 			free(my_file_buff);
@@ -178,7 +181,7 @@
 		return CheakHandle(*hFile);
 	}
 	
-	void FreeArray(void** arr, int len)
+	int FreeArray(void** arr, int len)
 	{
 		int ret_val = 0;
 		ret_val = valid_PTR(arr);
@@ -192,6 +195,7 @@
 				free(arr[i]);
 		}
 		free(arr);
+		return SUCCESS;
 	}
 
 	int CloseHandleWrap(HANDLE file)
@@ -298,11 +302,7 @@
 put the result in dest ptr TO-do  free dest outside */
 		char* dest;
 		int ret_val = 0;
-		ret_val = valid_PTR(source_path);
-		if (ret_val != SUCCESS)
-		{
-			return ret_val;
-		}
+		ret_val = 0;
 		char* p_abs_path = strrchr(source_path, '\\');
 		char* p_explicit_file;
 		if (opreation == ENCRYPT)
@@ -316,7 +316,7 @@ put the result in dest ptr TO-do  free dest outside */
 		size_t explicit_file_len = strlen(p_explicit_file);
 		size_t abs_path_len = p_abs_path == NULL ? 0 : p_abs_path - source_path;
 		dest = calloc( explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, sizeof(char));
-		ret_val=CheakAlocation((void*)dest);
+		ret_val=CheckAlocation((void*)dest);
 		if (ret_val != SUCCESS)
 			return ret_val;
 		if (p_abs_path)
