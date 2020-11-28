@@ -1,24 +1,2 @@
 ﻿  main.c
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\main.c(36,50): warning C4047: '>': 'char *' differs in levels of indirection from 'int'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\main.c(42,1): warning C4047: 'initializing': 'int' differs in levels of indirection from 'char *'
-  Functions.c
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(37,20): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE *'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(37,13): warning C4024: 'CheakArgs': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(81,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(81,3): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(134,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(134,3): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(140,16): warning C4047: 'function': 'int' differs in levels of indirection from 'void **'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\Functions.c(140,13): warning C4024: 'CheakArgs': different types for formal and actual parameter 1
-  ThrredFuncs.c
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(10,1): warning C4029: declared formal parameter list different from definition
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(19,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(19,3): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(27,26): warning C4098: 'decrypt_block': 'void' function returning a value
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(36,3): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(36,3): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(48,19): warning C4018: '<=': signed/unsigned mismatch
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(88,2): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(88,2): warning C4024: 'exit': different types for formal and actual parameter 1
-C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2_2\HW2\HW2\ThrredFuncs.c(111,72): error C2059: syntax error: ')'
-  Generating Code...
+  HW2.vcxproj -> C:\Users\Eran\Desktop\תואר שני\Os\HW2\HW2\Debug\HW2.exe

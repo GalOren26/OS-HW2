@@ -23,43 +23,68 @@
 	}
 }
 
-	void valid_PTR(void* ptr )
+	int valid_PTR(void* ptr )
 	{
 		if (!ptr)
 		{
 			printf(" invalid input pointer parm");
-			exit(INVALID_INPUT_PARM_EMPTY_POINTER);
+			return INVALID_INPUT_PARM_EMPTY_POINTER;
 		}
+		return SUCCESS;
 	}
 
 	void FreeHandelsArray(HANDLE* handels, int len)
 	{
-		valid_PTR(handels);
+		int ret_val = 0;
+		ret_val=valid_PTR(handels);
+		if (ret_val != SUCCESS)
+		{
+			return ret_val;
+		}
 		for (int i = 0; i < len;i++)
 		{
-			CloseHandleWrap(handels[i]);
+			if (handels[i]!=0)
+				CloseHandleWrap(handels[i]);
 		}
 	}
 
-	//void  CheakAlocation(void* p_arr)
-	//{
-	//	if (p_arr == NULL) {
-	//		printf_s("MEMORY_ALLOCATION_FAILURE.\n");
-	//		exit(MEMORY_ALLOCATION_FAILURE);
-	//	}
-	//}
-	//void CheakHandle(HANDLE my_handle)
-	//{
-	//	if (my_handle == INVALID_HANDLE_VALUE)
-	//	{
-	//		printf_s("INVALID_HANDLE. error code %d", GetLastError());
-	//		exit(INVALID_HANDLE_VALUE);
-	//	}
-	//}
-
-	BOOL CheakIsAnumber(char* str)
+	int WaitForSingleObjectWrap(HANDLE handle, uli time)
 	{
-		valid_PTR(str);
+		int wait_code = WaitForSingleObject(handle, time);
+		if (wait_code != WAIT_OBJECT_0)
+		{
+			printf("problem with WaitForSingleObject ,error code is %d \n\n", GetLastError());
+			return TIME_OUT_THREAD;
+		}
+		return SUCCESS;
+	}
+
+	int  CheakAlocation(void* p_arr)
+	{
+		if (p_arr == NULL) {
+			printf_s("MEMORY_ALLOCATION_FAILURE.\n");
+			return MEMORY_ALLOCATION_FAILURE;
+		}
+		return SUCCESS;
+	}
+	int CheakHandle(HANDLE my_handle)
+	{
+		if (my_handle == INVALID_HANDLE_VALUE)
+		{
+			printf_s("INVALID_HANDLE. error code %d", GetLastError());
+			return INVALID_HANDLE_VALUE;
+		}
+		return SUCCESS;
+	}
+
+	int CheakIsAnumber(char* str)
+	{
+		int ret_val = 0;
+		ret_val = valid_PTR(str);
+		if (ret_val != SUCCESS)
+		{
+			return ret_val;
+		}
 		/*This function cheak if string is a number - used for validate the value of key in this code */
 		for (int i = 0; str[i] != '\0'; i++)
 		{
@@ -72,33 +97,46 @@
 	}
 //****************File methods**************
 
-	
-
-	void read_number_of_line_and_end_of_lines(HANDLE file, PDWORD OUT num_of_lines_out, OUT uli** p_end_of_lines_out)
+	int read_number_of_line_and_end_of_lines(HANDLE file, PDWORD OUT num_of_lines_out, OUT uli** p_end_of_lines_out)
 	{
 		/*return the  number of line in file  and the places in the file of each  end of line */
-
-		CheakHandle(file)
+		int ret_val = 0;
+		ret_val=CheakHandle(file);
+		if (ret_val != SUCCESS)
+			return ret_val;
 		// cheak_file_size_in_order to read file.
 		LARGE_INTEGER  len_li;
 		if (GetFileSizeEx(file, &len_li) == 0)
 		{
 			printf("empty file . error code %d", GetLastError());
-			exit(EMPTY_FILE);
+			return EMPTY_FILE;
 		}
 		if (len_li.u.HighPart != 0)
 		{	//asume file not more than 4gb 
 			printf("File is Too big need to be less then 4 GB !");
-			exit(FILE_IS_TOO_BIG);
+			return FILE_IS_TOO_BIG;
 		}
 		DWORD len = len_li.u.LowPart;
-		char* my_file_buff = (char* )calloc(len, sizeof(char));
-		CheakAlocation(my_file_buff);
-		ReadFileWrap(len, file, my_file_buff);
+		char* my_file_buff = 0;
+		my_file_buff = (char*)calloc(len, sizeof(char));
+		ret_val=CheakAlocation(my_file_buff);
+		if (ret_val != SUCCESS&& my_file_buff==0)
+			return ret_val;
+		ret_val=ReadFileWrap(len, file, my_file_buff);
+		if (ret_val != SUCCESS)
+		{
+			free(my_file_buff);
+			return ret_val;
+		}
 		DWORD num_of_lines = 0; 
 		/* allocatre array to store end of lines, size bounded by the size of file and after fill will be shrink.*/
 		uli* p_end_of_lines_temp = calloc( len, sizeof(uli));
-		CheakAlocation(p_end_of_lines_temp);
+		ret_val =CheakAlocation(p_end_of_lines_temp);
+		if (ret_val != SUCCESS)
+		{
+			free(my_file_buff);
+			return ret_val;
+		}
 		uli place = 0; 
 		DWORD pos_in_file;
 		for (pos_in_file = 0; pos_in_file < len; pos_in_file++)
@@ -116,55 +154,87 @@
 
 		}
 		uli* p_end_of_lines = calloc(place, sizeof(uli));
-		CheakAlocation(p_end_of_lines);
+		ret_val=CheakAlocation(p_end_of_lines);
+		if (ret_val != SUCCESS)
+		{
+			free(my_file_buff);
+			free(p_end_of_lines_temp);
+			return ret_val;
+		}
 		if (place < len)
 			memcpy(p_end_of_lines, p_end_of_lines_temp, sizeof(uli) *place);
-
 		free(p_end_of_lines_temp); 
 		free(my_file_buff);
 		*num_of_lines_out = num_of_lines;
 		*p_end_of_lines_out = p_end_of_lines;
+		return SUCCESS;
 	}
 
-	HANDLE OpenFileWrap( LPCSTR str, DWORD mode)
+	int OpenFileWrap( LPCSTR str, DWORD mode,HANDLE * OUT hFile)
 	{
 		//CreateFileA wrap 
-		HANDLE hFile;
-		hFile = CreateFileA(str, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ| FILE_SHARE_WRITE, NULL, mode, FILE_ATTRIBUTE_NORMAL, NULL);
-		CheakHandle(hFile)
-		return hFile;
+		int ret_val = 0;
+		*hFile = CreateFileA(str, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ| FILE_SHARE_WRITE, NULL, mode, FILE_ATTRIBUTE_NORMAL, NULL);
+		return CheakHandle(*hFile);
 	}
 	
 	void FreeArray(void** arr, int len)
 	{
-		valid_PTR(arr);
+		int ret_val = 0;
+		ret_val = valid_PTR(arr);
+		if (ret_val != SUCCESS)
+		{
+			return ret_val;
+		}
 		for (int i = 0; i < len;i++)
 		{
-			free(arr[i]);
+			if (arr[i]!=NULL)
+				free(arr[i]);
 		}
 		free(arr);
 	}
 
-	void CloseHandleWrap(HANDLE file)
+	int CloseHandleWrap(HANDLE file)
 	{
 		//CloseHandle wrap 
 		BOOL  file_status = CloseHandle(file);
 		if (!file_status)
 		{
 			printf("Failed to close file.error code %d", GetLastError());
+			return FAILAD_TO_CLOSE_FILE;
 			//not exit couse try best effort to close more files. 
 		}
+		return SUCCESS;
+	}
+	int CreateSemphoreWrap(int num_of_therads, HANDLE* OUT semphore)
+	{
+		*semphore = CreateSemaphoreA(
+			NULL,	/* Default security attributes */
+			0,		/* Initial Count - all slots are empty */
+			num_of_therads,		/* Maximum Count */
+			NULL); 
+
+		if (*semphore == NULL)
+		{
+			printf("problem with create semphore %d", GetLastError());
+			return PROBLEM_CRATE_SEMPHORE;
+		}
+		return SUCCESS;
 	}
 
-	void SetFilePointerWrap(HANDLE input_file, uli pos, DWORD mode)
+	int OpenSemphoreWrap(HANDLE* OUT semphore, const char* name)
 	{
-		DWORD retval = SetFilePointer(input_file, pos, NULL, mode);
+		*semphore = OpenSemaphoreA(
+			SYNCHRONIZE,
+			FALSE,		
+			name);
 
-		if (retval == INVALID_SET_FILE_POINTER)
+		if (*semphore == NULL)
 		{
-			printf("INVALID_SET_FILE_POINTER");
-			exit(INVALID_SET_FILE_POINTER);
+			printf("problem with OPEN semphore %d", GetLastError());
+			return PROBLEM_CRATE_SEMPHORE;
 		}
+		return SUCCESS;
 	}
 
 	int  ReadFileWrap(DWORD len, HANDLE file,char* my_file_buff )
@@ -180,22 +250,59 @@
 		return SUCCESS;
 	}
 
-	void WriteFileWrap(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
+	int SetEndOfFileWarp(LPCSTR output_path, uli end_pos, DWORD mode)
+	{
+		HANDLE output_file;
+		int ret_val = 0;
+		int ret_val2 = 0;
+		OpenFileWrap(output_path, CREATE_ALWAYS, &output_file);
+		ret_val = CheakHandle(output_file);
+		//TODO
+		if (ret_val != SUCCESS)
+		{
+			return ret_val;
+		}
+		// set EOF at the end of the input file 
+		ret_val = SetFilePointer(output_file, end_pos,NULL, mode);
+		if (ret_val == INVALID_SET_FILE_POINTER)
+		{
+			printf("problem with set file-pointer %d \n", GetLastError());
+			CloseHandleWrap(output_file);
+			return ret_val;
+		}
+		ret_val = SetEndOfFile(output_file);
+		if (ret_val==0)
+		{
+			printf("error with set eof ,error code %d", GetLastError());
+		}
+		ret_val2 = CloseHandleWrap(output_file);
+		if (ret_val == 0 || ret_val2 != SUCCESS)
+			return ret_val;
+		return SUCCESS;
+	}
+
+	int WriteFileWrap(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
 	{
 		DWORD lpNumberOfBytesRead = 0;
 		if (WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, &lpNumberOfBytesRead, NULL) == 0)
 		{
 			printf("error write file . error code %d", GetLastError());
-			exit(ERROR_WRITE_FILE);
+			return FAILED_WRITE_TO_FILE;
 		}
+		return SUCCESS;
 	}
 
-	void find_dest_path(const char* source_path,OUT char ** dest_out,int opreation  )
+	int find_dest_path(const char* source_path,OUT char ** dest_out,int opreation  )
 	{
 		/* find the dest path of where to save the decrypted.txt  ootput file rather source path is absulte or realative
 put the result in dest ptr TO-do  free dest outside */
 		char* dest;
-		valid_PTR((void*)source_path);
+		int ret_val = 0;
+		ret_val = valid_PTR(source_path);
+		if (ret_val != SUCCESS)
+		{
+			return ret_val;
+		}
 		char* p_abs_path = strrchr(source_path, '\\');
 		char* p_explicit_file;
 		if (opreation == ENCRYPT)
@@ -209,7 +316,9 @@ put the result in dest ptr TO-do  free dest outside */
 		size_t explicit_file_len = strlen(p_explicit_file);
 		size_t abs_path_len = p_abs_path == NULL ? 0 : p_abs_path - source_path;
 		dest = calloc( explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, sizeof(char));
-		CheakAlocation((void*)dest);
+		ret_val=CheakAlocation((void*)dest);
+		if (ret_val != SUCCESS)
+			return ret_val;
 		if (p_abs_path)
 		{
 			memcpy(dest, source_path, abs_path_len);
@@ -217,48 +326,105 @@ put the result in dest ptr TO-do  free dest outside */
 		}
 		strcat_s(dest, explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, p_explicit_file);
 		*dest_out = dest;
+		return SUCCESS;
 	}
 
-	int CheckOperation(char* operation)
+	int CheckOperation(char* operation,int* modeflag)
 	{	char enc[3] = "-e";
 		char dec[3] = "-d";
-		int modeflag = 3;
-		valid_PTR(operation);
+		int ret_val = 0;
+		ret_val = valid_PTR(operation);
+		if (ret_val != SUCCESS)
+		{
+			return ret_val;
+		}
 		if (strchr(operation, 'e') != NULL && strchr(operation, 'd') != NULL)
 		{
 			printf("INVALID_NUMBER_OF_PARAMS");
-			exit(INVALID_NUMBER_OF_PARAMS);
+			return INVALID_NUMBER_OF_PARAMS;
 		}
 		if (strcmp(operation, enc) == 0)
 		{
-			modeflag = ENCRYPT;
+			*modeflag = ENCRYPT;
 
 		}
-		if (strcmp(operation, dec) == 0)
+		else if (strcmp(operation, dec) == 0)
 		{
-			modeflag = DECRYPT;
+			*modeflag = DECRYPT;
 		}
+		else
+			return NOT_VALID_OPREATION;
 
-		return modeflag;
+		return SUCCESS;
 	}
-	void find_dest_path_enc(const char* source_path, OUT char** dest_out)
+	int SetFilePointerWrap(HANDLE input_file, uli pos, DWORD mode)
 	{
-		/* find the dest path of where to save the encrypted.txt  output file rather source path is absulte or realative
-put the result in dest ptr TO-do  free dest outside */
-		char* dest;
-		valid_PTR((void*)source_path);
-		char* p_abs_path = strrchr(source_path, '\\');
-		char* p_explicit_file = "encypted.txt";
-		size_t explicit_file_len = strlen(p_explicit_file);
-		size_t abs_path_len = p_abs_path == NULL ? 0 : p_abs_path - source_path;
-		dest = calloc(explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, sizeof(char));
-		CheakAlocation((void*)dest);
-		if (p_abs_path)
+		DWORD retval = SetFilePointer(input_file, pos, NULL, mode);
+
+		if (retval == INVALID_SET_FILE_POINTER)
 		{
-			memcpy(dest, source_path, abs_path_len);
-			dest[abs_path_len] = '\\';
+			printf("INVALID_SET_FILE_POINTER");
+			return INVALID_SET_FILE_POINTER;
 		}
-		strcat_s(dest, explicit_file_len + abs_path_len + ADDITION_LEN_TO_PATH, p_explicit_file);
-		*dest_out = dest;
+		return SUCCESS;
 	}
 
+
+	//int setup_memory_menagment(MemoryTracker* OUT MemTracker)
+	//{
+	//	MemTracker->max_size = START_ALLOCATION_SIZE;
+	//	MemTracker->count = 0;
+	//	MemTracker->array_tracker = ((MemoryTrackerElement*)calloc(START_ALLOCATION_SIZE, sizeof(MemoryTrackerElement)));
+	//	return CheakAlocation(MemTracker->array_tracker);
+
+	//}
+
+	//int push_element_memory_mangment(MemoryTracker* MemTracker, MemoryTracker element)
+	//{
+	//	int ret_val = 0;
+	//	ret_val = valid_PTR(MemTracker);
+	//	if (ret_val != SUCCESS)
+	//	{
+	//		return ret_val;
+	//	}
+	//	if (MemTracker->count < MemTracker->max_size)
+	//	{
+	//		MemTracker->max_size *= 2;
+	//		MemTracker->array_tracker = (MemoryTracker*)realloc(MemTracker->array_tracker, sizeof(MemoryTracker) * sizeof(MemTracker->max_size));
+	//		ret_val = CheakAlocation(MemTracker->array_tracker);
+	//		if (ret_val != SUCCESS)
+	//		{
+	//			return ret_val;
+	//		}
+	//	}
+	//	MemTracker->array_tracker[MemTracker->count] = element;
+	//	MemTracker->count++;
+	//}
+
+	//void FreeAll(MemoryTracker* MemTracker)
+	//{
+	//	int ret_val = 0;
+	//	ret_val = valid_PTR(MemTracker);
+	//	if (ret_val != SUCCESS)
+	//	{
+	//		return ret_val;
+	//	}
+	//	for (int i = 0; i < MemTracker->count; i++)
+	//	{
+	//		if (MemTracker->array_tracker[i].array_handle == NULL)
+	//		{
+	//			continue;
+	//		}
+	//		if (MemTracker->array_tracker[i].type == ARRAY)
+	//		{
+	//			if (MemTracker->array_tracker[i].count == 1)
+	//				free(MemTracker->array_tracker[i].array_handle);
+	//			else
+	//			{
+	//				for (int j = 0; j < MemTracker->array_tracker[i].count; j++)
+	//					free(MemTracker->array_tracker[i].array_handle[i]);
+	//			}
+	//		}
+
+	//	}
+	//}
