@@ -1,5 +1,3 @@
-﻿  main.c
-  Functions.c
-  ThrredFuncs.c
-  Generating Code...
-  HW2.vcxproj -> C:\Users\Eran\Desktop\MasterDeg\Os\HW2\HW2\x64\Debug\HW2.exe
+﻿ThrredFuncs.obj : error LNK2019: unresolved external symbol Decryption referenced in function Dec_Enc_Block
+ThrredFuncs.obj : error LNK2019: unresolved external symbol Encryption referenced in function Dec_Enc_Block
+C:\Users\Eran\Desktop\MasterDeg\Os\HW2\HW2\x64\Debug\HW2.exe : fatal error LNK1120: 2 unresolved externals

@@ -75,61 +75,6 @@ int Dec_Enc_Block(parssing_data* p_params)
 }
 
 
-int Decryption(char* coded,uli end_of_block, uli key)
-{
-	// function for Decryption and enctyption 
-	int ret_val = 0;
-	ret_val = valid_PTR(coded);
-	if (ret_val != SUCCESS)
-	{
-		return ret_val;
-	}
-	char ch;
-		for (uli i=0 ; i<= end_of_block; i++) { // run over all the string
-			ch = coded[i];
-			if (ch >= 'a' && ch <= 'z')
-			{ 
-				coded[i]='a'+moudlo(ch - 'a' - key, 26);
-			}
-			if (ch >= 'A' && ch <= 'Z')
-			{ 
-				coded[i] = 'A' +moudlo(ch - 'A' - key, 26);
-			}
-			if (ch >= '0' && ch <= '9')
-			{ 
-				coded[i] = '0' + moudlo(ch - '0' - key, 10);
-			}
-		}
-		return SUCCESS;
-}
-int Encryption(char* coded, uli end_of_block, uli key)
-{
-	// function for Decryption and enctyption 
-	int ret_val = 0;
-	ret_val = valid_PTR(coded);
-	if (ret_val != SUCCESS)
-	{
-		return ret_val;
-	}
-	char ch;
-	for (uli i = 0; i <= end_of_block; i++) { // run over all the string
-		ch = coded[i];
-		if (ch >= 'a' && ch <= 'z')
-		{
-			coded[i] = 'a' + moudlo(ch - 'a' + key, 26);
-		}
-		if (ch >= 'A' && ch <= 'Z')
-		{
-			coded[i] = 'A' + moudlo(ch - 'A' + key, 26);
-		}
-		if (ch >= '0' && ch <= '9')
-		{
-			coded[i] = '0' + moudlo(ch - '0' + key, 10);
-		}
-	}
-	return SUCCESS;
-}
-
 DWORD WINAPI DecThread(LPVOID lpParam)
 {
 	int ret_val1 = 0;
@@ -204,7 +149,7 @@ int Createmultiplethreads(volatile int num_of_threads, uli num_of_lines, uli* en
 			add_one_more_line = 0;
 		}
 		// params need to be allocate dynamiclly->init params 
-		thread_params[i] = (parssing_data*)calloc(num_of_threads, sizeof(parssing_data)); // each cell in the array, contains params for thread
+		thread_params[i] = (parssing_data*)calloc(1, sizeof(parssing_data)); // each cell in the array, contains params for thread
 		ret_val=CheckAlocation(thread_params[i]);
 		if (ret_val != SUCCESS)
 			goto free4;
@@ -270,7 +215,7 @@ free2:
 free1:
 	return ret_val;
 }
-static int CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
+ int CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
 		LPVOID p_thread_parameters,
 		LPDWORD p_thread_id, HANDLE* OUT thread_handle)
 	{
